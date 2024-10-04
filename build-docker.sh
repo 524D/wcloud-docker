@@ -10,7 +10,7 @@ cd ..
 VERSION=${VERSION#"v"}
 
 # Create Docker image
-docker build -tag "${DOCKER_USER}/${PRG}:${VERSION}" .
+docker build --tag "${DOCKER_USER}/${PRG}:${VERSION}" .
 
 # Push Docker image
 #docker push "${DOCKER_USER}/${PRG}:${VERSION}"
