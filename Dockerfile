@@ -1,32 +1,30 @@
 # syntax=docker/dockerfile:1
 
-################################################################################
-# Create a stage for building the application.
+# ################################################################################
+# # Create a stage for building the application.
 
-ARG RUST_VERSION=1.70.0
+# ARG RUST_VERSION=1.70.0
 ARG APP_NAME=wcloud
-FROM rust:${RUST_VERSION}-slim-bullseye AS build
-ARG APP_NAME
-WORKDIR /app
+# FROM rust:${RUST_VERSION}-slim-bullseye AS build
+# WORKDIR /app
 
-# Build the application.
-# Leverage a cache mount to /usr/local/cargo/registry/
-# for downloaded dependencies and a cache mount to /app/target/ for
-# compiled dependencies which will speed up subsequent builds.
-# Leverage a bind mount to the src directory to avoid having to copy the
-# source code into the container. Once built, copy the executable to an
-# output directory before the cache mounted /app/target is unmounted.
-RUN --mount=type=bind,source=src,target=src \
-    --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
-    --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
-    --mount=type=cache,target=/app/target/ \
-    --mount=type=cache,target=/usr/local/cargo/registry/ \
-    --mount=type=bind,source=migrations,target=migrations \
-    <<EOF
-set -e
-cargo build --locked --release
-cp ./target/release/$APP_NAME /bin/$APP_NAME
-EOF
+# # Build the application.
+# # Leverage a cache mount to /usr/local/cargo/registry/
+# # for downloaded dependencies and a cache mount to /app/target/ for
+# # compiled dependencies which will speed up subsequent builds.
+# # Leverage a bind mount to the src directory to avoid having to copy the
+# # source code into the container. Once built, copy the executable to an
+# # output directory before the cache mounted /app/target is unmounted.
+# RUN --mount=type=bind,source=src,target=src \
+#     --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
+#     --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
+#     --mount=type=cache,target=/app/target/ \
+#     --mount=type=cache,target=/usr/local/cargo/registry/ \
+#     <<EOF
+# set -e
+# cargo build --locked --release
+# cp ./target/release/wcloud /bin/wcloud
+# EOF
 
 ################################################################################
 # Create a new stage for running the application that contains the minimal
@@ -55,7 +53,8 @@ RUN adduser \
 USER appuser
 
 # Copy the executable from the "build" stage.
-COPY --from=build /bin/$APP_NAME /bin/
+#COPY --from=build /bin/$APP_NAME /bin/
+COPY bin/wcloud /bin/wcloud
 
 # What the container should run when it is started.
-CMD ["/bin/$APP_NAME"]
+CMD ["/bin/wcloud"]
