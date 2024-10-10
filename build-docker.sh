@@ -20,11 +20,8 @@ git pull
 VERSION=$(git describe --abbrev --dirty --always --tags)
 VERSION=${VERSION#"v"}
 
-# We want a full static binary
-rustup target add x86_64-unknown-linux-musl
-
 # Build the binary
-cargo install --target=x86_64-unknown-linux-musl --force ${PRG}
+cargo install --force ${PRG}
 
 cd ../..
 
@@ -34,7 +31,7 @@ cp ~/.cargo/bin/${PRG} ${PRG}
 docker build --no-cache --tag "${DOCKER_USER}/${PRG}:${VERSION}" .
 
 # Test the Docker image
-docker run --rm "${DOCKER_USER}/${PRG}:${VERSION}" /bin/wcloud --help
+docker run --rm "${DOCKER_USER}/${PRG}:${VERSION}" /wcloud --help
 
 # Push Docker image
 docker push "${DOCKER_USER}/${PRG}:${VERSION}"
